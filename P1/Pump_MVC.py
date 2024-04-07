@@ -45,11 +45,11 @@ class Pump_Controller():
         :return: 
         """
         self.Model.PumpName = data[0].strip()  # first txt line is pump name
-        units_line = data[2].strip()
-        units = units_line.split()  # assuming the second line is "1/2 horsepower, 3450 rpm"
+        units_line = data[2].strip()  # third line containing the units
+        units = units_line.split()
         L = data[2].split()
-        self.Model.FlowUnits = units[0]
-        self.Model.HeadUnits = units[1]
+        self.Model.FlowUnits = units[0]  # gpm
+        self.Model.HeadUnits = units[1]  # ft
 
         # extracts flow, head and efficiency data and calculates coefficients
         self.SetData(data[3:])
@@ -152,8 +152,8 @@ class Pump_View():
         ax2.tick_params(direction='in')
 
         # Add legends separately
-        self.ax.legend(handles=[head_fit_line, head_data_line], loc='center left')
-        ax2.legend(handles=[eff_fit_line, eff_data_line], loc='upper right')
+        self.ax.legend(handles=[head_fit_line, head_data_line], loc='center left')  # adds head legend  to center left
+        ax2.legend(handles=[eff_fit_line, eff_data_line], loc='upper right')  # adds efficiency legend to top right
 
         # Draw the canvas
         self.canvas.draw()
