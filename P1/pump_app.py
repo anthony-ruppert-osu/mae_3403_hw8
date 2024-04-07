@@ -30,7 +30,7 @@ class PumpCurve_GUI_Class(Ui_Form, qtw.QWidget):  #class for PumpCurve_GUI inher
         #add the canvas to the form (can't be done directly in qtdesigner)
         self.GL_Output.addWidget(self.canvas,5,0,1,4)
 
-        self.myPump=#JES Missing Code #create a pump controller object
+        self.myPump = Pump_Controller() # creates a pump controller object
         self.setViewWidgets() #pass along widgets to myPump for diaplay
 
         #show the widget
@@ -71,11 +71,11 @@ class PumpCurve_GUI_Class(Ui_Form, qtw.QWidget):  #class for PumpCurve_GUI inher
         return True
         :return: boolean for if the operation was successful.
         '''
-        fname=#JES Missing Code # use qtw.QFileDialog.getOpenFileName
-        oTF=len(fname[0])>0
+        fname = qtw.QFileDialog.getOpenFileName(self, 'Open file', self.FilePath)  # creates dialog to open file
+        oTF = len(fname[0])>0
         if oTF:
-            self.FileName=fname[0]
-            self.FilePath=str(Path(fname[0]).parents[0])+'/'
+            self.FileName = fname[0]
+            self.FilePath = str(Path(fname[0]).parents[0])+'/'
             self.TE_Filename.setText(self.FileName)
         return oTF
 

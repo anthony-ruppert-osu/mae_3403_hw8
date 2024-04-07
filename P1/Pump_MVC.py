@@ -44,11 +44,12 @@ class Pump_Controller():
         :param data: 
         :return: 
         """
-        self.Model.PumpName = #JES Missing Code
-        #data[1] is the units line
-        L=data[2].split()
-        self.Model.FlowUnits = #JES Missing Code
-        self.Model.HeadUnits = #JES Missing Code
+        self.Model.PumpName = data[0].strip()  # first txt line is pump name
+        units_line = data[2].strip()
+        units = units_line.split()  # assuming the second line is "1/2 horsepower, 3450 rpm"
+        L = data[2].split()
+        self.Model.FlowUnits = units[0]
+        self.Model.HeadUnits = units[1]
 
         # extracts flow, head and efficiency data and calculates coefficients
         self.SetData(data[3:])
@@ -68,10 +69,10 @@ class Pump_Controller():
 
         #parse new data
         for L in data:
-            Cells=#JES Missing Code #parse the line into an array of strings
-            self.Model.FlowData=np.append(self.Model.FlowData, #JES Missing Code) #remove any spaces and convert string to a float
-            self.Model.HeadData=np.append(self.Model.HeadData, #JES Missing Code) #remove any spaces and convert string to a float
-            self.Model.EffData=np.append(self.Model.EffData, #JES Missing Code) #remove any spaces and convert string to a float
+            Cells = L.split()  # split the line into a list of strings
+            self.Model.FlowData = np.append(self.Model.FlowData, float(Cells[0]))  # flow data
+            self.Model.HeadData = np.append(self.Model.HeadData, float(Cells[1]))  # head data
+            self.Model.EffData = np.append(self.Model.EffData, float(Cells[2]))  # efficiency data
 
         #call least square fit for head and efficiency
         self.LSFit()
@@ -122,16 +123,39 @@ class Pump_View():
 
     def DoPlot(self, Model):
         """
-        Create the plot.
+        Create the plot with dual y-axes for Head and Efficiency, all data colored in black, separate legends,
+        and tick marks pointing inwards.
         :param Model:
         :return:
         """
-        headx, heady, headRSq = Model.LSFitHead.GetPlotInfo(3, npoints=500)
-        effx, effy, effRSq = Model.LSFitEff.GetPlotInfo(3, npoints=500)
+        # Get the fit and plot info for Head and Efficiency
+        headx, heady, headRSq = Model.LSFitHead.GetPlotInfo(2, npoints=500)  # Quadric fit for Head
+        effx, effy, effRSq = Model.LSFitEff.GetPlotInfo(3, npoints=500)  # Cubic fit for Efficiency
 
-        axes = self.ax
-        #JES Missing code (many lines to make the graph)
+        # Clear any existing plots
+        self.ax.clear()
+        self.ax.set_xlabel("Flow Rate (gpm)")
+        self.ax.set_ylabel("Head (ft)")
 
+        # Plot the Head data and fit on the primary y-axis
+        head_data_line, = self.ax.plot(Model.FlowData, Model.HeadData, 'ko', label='Head', linestyle='None')
+        head_fit_line, = self.ax.plot(headx, heady, 'k--', label=f'Head (R²={headRSq:.3f})')
+
+        # Create a secondary y-axis for the Efficiency data and fit
+        ax2 = self.ax.twinx()
+        ax2.set_ylabel("Efficiency (%)")
+        eff_data_line, = ax2.plot(Model.FlowData, Model.EffData, 'k^', label='Efficiency', linestyle='None')
+        eff_fit_line, = ax2.plot(effx, effy, 'k:', label=f'Efficiency (R²={effRSq:.3f})')
+
+        # Set tick marks to point inwards
+        self.ax.tick_params(direction='in')
+        ax2.tick_params(direction='in')
+
+        # Add legends separately
+        self.ax.legend(handles=[head_fit_line, head_data_line], loc='center left')
+        ax2.legend(handles=[eff_fit_line, eff_data_line], loc='upper right')
+
+        # Draw the canvas
         self.canvas.draw()
 
     def setViewWidgets(self, w):
