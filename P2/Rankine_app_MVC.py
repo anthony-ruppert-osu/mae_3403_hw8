@@ -90,19 +90,19 @@ class MainWindow(qtw.QWidget, Ui_Form):
         pass
 
     def SelectQualityOrTHigh(self):
-        self.RC.selectQualityOrTHigh() #NEW # call the selectqualityorthigh method on the controller
+        self.RC.selectQualityOrTHigh() #NEW # call the SelectQualityOrTHigh() method on the controller
         pass
 
     def SetPlotVariables(self):
-        self.RC.updatePlot() #NEW #Good # call the updatePlot() method of the controller
+        self.RC.updatePlot() #NEW # call the updatePlot() method of the controller
         pass
 
     def SetUnits(self):
-        self.RC.updateUnits() #NEW #Good # call the updateUnits() method of the controller
+        self.RC.updateUnits() #NEW # call the updateUnits() method of the controller
         pass
 
     def setNewPHigh(self):
-        self.RC.setNewPHigh() #NEW #??? #call the setNewPHigh() function of the controller
+        self.RC.setNewPHigh() #NEW #call the setNewPHigh() function of the controller
         pass
 
     def setNewPLow(self):
